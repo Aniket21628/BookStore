@@ -26,32 +26,42 @@ const BookList = () => {
   const [filters, setFilters] = useState({ genre: '', author: '' });
   const [genres, setGenres] = useState([]);
   const [authors, setAuthors] = useState([]);
+  const [sortBy, setSortBy] = useState('date'); // 'date' or 'rating'
 
   useEffect(() => {
     fetchBooks();
     fetchGenres();
     fetchAuthors();
-  }, [currentPage, filters]);
+  }, [currentPage, filters, sortBy]);
 
   const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      const params = {
-        page: currentPage,
-        limit: 10,
-        ...(filters.genre && { genre: filters.genre }),
-        ...(filters.author && { author: filters.author }),
-      };
+  try {
+    setLoading(true);
+    const params = {
+      page: currentPage,
+      limit: 10,
+      sortBy,
+    };
 
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books`, { params });
-      setBooks(response.data.books);
-      setPagination(response.data.pagination);
-    } catch {
-      setError('Failed to fetch books');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books`, {
+  params: {
+    page: currentPage,
+    limit: 10,
+    genre: filters.genre,
+    author: filters.author,
+    sortBy,
+  },
+});
+
+    setBooks(response.data.books);
+    setPagination(response.data.pagination);
+  } catch {
+    setError('Failed to fetch books');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const fetchGenres = async () => {
     try {
@@ -136,6 +146,22 @@ const BookList = () => {
             ))}
           </Select>
         </FormControl>
+
+        <FormControl className="min-w-[180px]">
+        <InputLabel>Sort By</InputLabel>
+        <Select
+          value={sortBy}
+          onChange={(e) => {
+            setSortBy(e.target.value);
+            setCurrentPage(1);
+          }}
+          label="Sort By"
+        >
+          <MenuItem value="date">Date Added (Newest)</MenuItem>
+          <MenuItem value="rating">Rating (Highest)</MenuItem>
+        </Select>
+      </FormControl>
+
 
         {(filters.genre || filters.author) && (
           <Button onClick={clearFilters} variant="outlined" className="h-[56px]">

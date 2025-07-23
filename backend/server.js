@@ -156,8 +156,18 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Books Routes
 app.get('/api/books', (req, res) => {
-  const { page = 1, limit = 10, genre, author } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    genre,
+    author,
+    sortBy = 'date',  // 'date' or 'rating'
+    order = 'desc'     // 'asc' or 'desc'
+  } = req.query;
+
   const offset = (page - 1) * limit;
+  const sortColumn = sortBy === 'rating' ? 'average_rating' : 'b.created_at';
+  const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'; // sanitize input
 
   let query = `
     SELECT b.*, 
@@ -184,7 +194,12 @@ app.get('/api/books', (req, res) => {
     query += ' WHERE ' + conditions.join(' AND ');
   }
 
-  query += ' GROUP BY b.id ORDER BY b.created_at DESC LIMIT ? OFFSET ?';
+  query += `
+    GROUP BY b.id
+    ORDER BY ${sortColumn} ${sortOrder}
+    LIMIT ? OFFSET ?
+  `;
+
   params.push(parseInt(limit), parseInt(offset));
 
   db.all(query, params, (err, books) => {
@@ -192,25 +207,24 @@ app.get('/api/books', (req, res) => {
       return res.status(500).json({ error: 'Database error' });
     }
 
-    // Get total count for pagination
+    // Count query (simplified)
     let countQuery = 'SELECT COUNT(*) as total FROM books';
     let countParams = [];
 
     if (genre || author) {
-      countQuery += ' WHERE ';
       let countConditions = [];
-      
+
       if (genre) {
         countConditions.push('genre LIKE ?');
         countParams.push(`%${genre}%`);
       }
-      
+
       if (author) {
         countConditions.push('author LIKE ?');
         countParams.push(`%${author}%`);
       }
-      
-      countQuery += countConditions.join(' AND ');
+
+      countQuery += ' WHERE ' + countConditions.join(' AND ');
     }
 
     db.get(countQuery, countParams, (err, countResult) => {
