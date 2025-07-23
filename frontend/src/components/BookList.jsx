@@ -43,7 +43,7 @@ const BookList = () => {
         ...(filters.author && { author: filters.author }),
       };
 
-      const response = await axios.get('http://localhost:5000/api/books', { params });
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/books`, { params });
       setBooks(response.data.books);
       setPagination(response.data.pagination);
     } catch {
@@ -55,7 +55,7 @@ const BookList = () => {
 
   const fetchGenres = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/genres');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/genres`);
       setGenres(response.data);
     } catch {
       console.error('Failed to fetch genres');
@@ -64,7 +64,7 @@ const BookList = () => {
 
   const fetchAuthors = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/authors');
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/authors`);
       setAuthors(response.data);
     } catch {
       console.error('Failed to fetch authors');

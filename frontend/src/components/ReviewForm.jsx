@@ -59,7 +59,7 @@ const ReviewForm = ({ bookId, onReviewAdded, onCancel }) => {
     setError('');
 
     try {
-      await axios.post(`http://localhost:5000/api/books/${bookId}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/books/${bookId}/reviews`, {
         review_text: formData.review_text.trim(),
         rating: formData.rating
       });

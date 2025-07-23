@@ -47,7 +47,7 @@ const AddBook = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/books', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/books`, {
         title: formData.title.trim(),
         author: formData.author.trim(),
         genre: formData.genre
