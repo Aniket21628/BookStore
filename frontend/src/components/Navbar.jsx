@@ -63,6 +63,8 @@ const Navbar = () => {
             <>
               <Button
                 component={Link}
+                variant='contained'
+                color='success'
                 to="/login"
                 className="text-gray-700 hover:text-blue-600"
               >
