@@ -5,7 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import BookList from './components/Booklist';
+import BookList from './components/BookList';
 import BookDetail from './components/BookDetail';
 import AddBook from './components/AddBook';
 // import './App.css';
