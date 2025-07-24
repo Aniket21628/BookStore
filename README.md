@@ -72,6 +72,13 @@ node server.js
 
 The backend server will start on `http://localhost:5000`
 
+### Environment Variables
+
+Create a `.env` file in the backend root:
+```env
+FRONTEND_URL = http://localhost:5173
+```
+
 3. **Set up the Frontend**
 ```bash
 # Open a new terminal and navigate to frontend directory
