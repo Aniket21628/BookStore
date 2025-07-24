@@ -85,7 +85,6 @@ const ReviewForm = ({ bookId, onReviewAdded, onCancel }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Rating Section */}
         <div>
           <Typography variant="subtitle1" className="text-gray-700 mb-1">
             Your Rating *
@@ -102,7 +101,6 @@ const ReviewForm = ({ bookId, onReviewAdded, onCancel }) => {
           </div>
         </div>
 
-        {/* Review Text */}
         <div>
           <TextField
             label="Your Review *"
@@ -124,7 +122,6 @@ const ReviewForm = ({ bookId, onReviewAdded, onCancel }) => {
           </Typography>
         </div>
 
-        {/* Buttons */}
         <div className="flex justify-end gap-4">
           <Button
             onClick={onCancel}

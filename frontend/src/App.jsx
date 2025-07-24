@@ -1,4 +1,3 @@
-// App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -8,7 +7,7 @@ import Signup from './components/Signup';
 import BookList from './components/BookList';
 import BookDetail from './components/BookDetail';
 import AddBook from './components/AddBook';
-// import './App.css';
+import './App.css';
 
 function App() {
   return (

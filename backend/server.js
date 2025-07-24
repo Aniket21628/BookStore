@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -10,16 +9,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Database setup
 const db = new sqlite3.Database('bookreviews.db');
 
-// Initialize database tables
 db.serialize(() => {
-  // Users table
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -28,7 +23,6 @@ db.serialize(() => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
-  // Books table
   db.run(`CREATE TABLE IF NOT EXISTS books (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -39,7 +33,6 @@ db.serialize(() => {
     FOREIGN KEY (user_id) REFERENCES users (id)
   )`);
 
-  // Reviews table
   db.run(`CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     review_text TEXT NOT NULL,
@@ -53,7 +46,6 @@ db.serialize(() => {
   )`);
 });
 
-// Authentication middleware
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -71,7 +63,6 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Auth Routes
 app.post('/api/auth/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -154,20 +145,19 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Books Routes
 app.get('/api/books', (req, res) => {
   const {
     page = 1,
     limit = 10,
     genre,
     author,
-    sortBy = 'date',  // 'date' or 'rating'
-    order = 'desc'     // 'asc' or 'desc'
+    sortBy = 'date',  
+    order = 'desc'     
   } = req.query;
 
   const offset = (page - 1) * limit;
   const sortColumn = sortBy === 'rating' ? 'average_rating' : 'b.created_at';
-  const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'; // sanitize input
+  const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'; 
 
   let query = `
     SELECT b.*, 
@@ -207,7 +197,6 @@ app.get('/api/books', (req, res) => {
       return res.status(500).json({ error: 'Database error' });
     }
 
-    // Count query (simplified)
     let countQuery = 'SELECT COUNT(*) as total FROM books';
     let countParams = [];
 
@@ -269,7 +258,6 @@ app.get('/api/books/:id', (req, res) => {
         return res.status(404).json({ error: 'Book not found' });
       }
 
-      // Get reviews for this book
       db.all(
         'SELECT * FROM reviews WHERE book_id = ? ORDER BY created_at DESC',
         [bookId],
@@ -319,7 +307,6 @@ app.post('/api/books', authenticateToken, (req, res) => {
   );
 });
 
-// Reviews Routes
 app.post('/api/books/:id/reviews', authenticateToken, (req, res) => {
   const bookId = req.params.id;
   const { review_text, rating } = req.body;
@@ -334,7 +321,6 @@ app.post('/api/books/:id/reviews', authenticateToken, (req, res) => {
     return res.status(400).json({ error: 'Rating must be between 1 and 5' });
   }
 
-  // Check if book exists
   db.get('SELECT id FROM books WHERE id = ?', [bookId], (err, book) => {
     if (err) {
       return res.status(500).json({ error: 'Database error' });
@@ -344,7 +330,6 @@ app.post('/api/books/:id/reviews', authenticateToken, (req, res) => {
       return res.status(404).json({ error: 'Book not found' });
     }
 
-    // Check if user already reviewed this book
     db.get(
       'SELECT id FROM reviews WHERE book_id = ? AND user_id = ?',
       [bookId, userId],
@@ -357,7 +342,6 @@ app.post('/api/books/:id/reviews', authenticateToken, (req, res) => {
           return res.status(400).json({ error: 'You have already reviewed this book' });
         }
 
-        // Add the review
         db.run(
           'INSERT INTO reviews (review_text, rating, book_id, user_id, reviewer) VALUES (?, ?, ?, ?, ?)',
           [review_text, parseInt(rating), bookId, userId, reviewer],
@@ -384,7 +368,6 @@ app.post('/api/books/:id/reviews', authenticateToken, (req, res) => {
   });
 });
 
-// Get genres for filter dropdown
 app.get('/api/genres', (req, res) => {
   db.all(
     'SELECT DISTINCT genre FROM books ORDER BY genre',
@@ -398,7 +381,6 @@ app.get('/api/genres', (req, res) => {
   );
 });
 
-// Get authors for filter dropdown
 app.get('/api/authors', (req, res) => {
   db.all(
     'SELECT DISTINCT author FROM books ORDER BY author',
@@ -412,7 +394,6 @@ app.get('/api/authors', (req, res) => {
   );
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });

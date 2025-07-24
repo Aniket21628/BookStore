@@ -26,7 +26,7 @@ const BookList = () => {
   const [filters, setFilters] = useState({ genre: '', author: '' });
   const [genres, setGenres] = useState([]);
   const [authors, setAuthors] = useState([]);
-  const [sortBy, setSortBy] = useState('date'); // 'date' or 'rating'
+  const [sortBy, setSortBy] = useState('date');
 
   useEffect(() => {
     fetchBooks();
@@ -115,7 +115,6 @@ const BookList = () => {
 </Box>
 
 
-      {/* Filters */}
       <Box className="flex flex-wrap gap-4 mb-6">
         <FormControl className="min-w-[180px]">
           <InputLabel>Genre</InputLabel>
@@ -170,21 +169,18 @@ const BookList = () => {
         )}
       </Box>
 
-      {/* Error */}
       {error && (
         <Alert severity="error" className="mb-4">
           {error}
         </Alert>
       )}
 
-      {/* Loading */}
       {loading && books.length === 0 ? (
         <div className="flex justify-center py-10">
           <CircularProgress />
         </div>
       ) : (
         <>
-          {/* Book Cards */}
           <Grid container spacing={3}>
             {books.length === 0 ? (
               <Grid item xs={12}>
@@ -229,7 +225,6 @@ const BookList = () => {
             )}
           </Grid>
 
-          {/* Pagination */}
           {pagination.totalPages > 1 && (
             <Box className="mt-8 flex justify-center gap-2 flex-wrap">
               <Button
@@ -263,7 +258,6 @@ const BookList = () => {
             </Box>
           )}
 
-          {/* Results Summary */}
           {pagination.totalBooks > 0 && (
             <Typography className="text-center py-4 text-sm text-gray-500">
               Showing {books.length} of {pagination.totalBooks} books

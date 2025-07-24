@@ -70,14 +70,6 @@ const Navbar = () => {
               >
                 Login
               </Button>
-              {/* <Button
-                component={Link}
-                to="/signup"
-                variant="contained"
-                color="primary"
-              >
-                Sign Up
-              </Button> */}
             </>
           )}
         </Box>
